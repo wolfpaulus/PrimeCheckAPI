@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'com.github.kaklakariada.aws-sam-deploy' version '0.5.0'
+}
+// from AWS Console
+def profileName = 'LambdaUser'
+def region = 'us-west-2'
+def bucket = 'com.techcasita.s3.bucket'
+
+def deployStage = 'prod'
+
+group 'com.techcasita.lambda'
+version '1.0'
+sourceCompatibility = 1.8
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // AWS Lambda
+    compile group: 'com.amazonaws', name: 'aws-lambda-java-core', version: '1.2.0'
+    compile group: 'com.amazonaws', name: 'aws-lambda-java-events', version: '2.2.2'
+    // (de-)serialization
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    // logging
+    compile group: 'com.amazonaws', name: 'aws-lambda-java-log4j2', version: '1.0.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+    //testing
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// deploying Serverless Java applications using AWS Serverless Application Models (SAM) via CloudFormation templates.
+serverless {
+    activeStage = deployStage
+    defaultAwsProfile = profileName
+    defaultAwsRegion = region
+    defaultDeployBucket = bucket
+    stages {
+        test {
+            // use default values
+        }
+        prod {
+            awsRegion = region
+            awsProfile = profileName
+            deployBucket = bucket
+        }
+    }
+    api {
+        stackName = "${project.name}-${deployStage}"
+        samTemplate = file('template.yml')
+    }
+}

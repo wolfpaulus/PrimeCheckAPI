@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: PrimeCheckAPI Serverless App
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ${CodeUri}
+      Handler: com.techcasita.lambda.Prime
+      Runtime: java8
+      Timeout: 10
+      MemorySize: 512
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: post
